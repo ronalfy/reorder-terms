@@ -84,10 +84,18 @@ final class Reorder_Terms_Helper  {
 		foreach( $attributes as $attribute_name => $attribute_value ) {
 			if ( 'data-taxonomy' == $attribute_name ) {
 				$taxonomy = sanitize_text_field( $attribute_value );
-			} elseif ( 'data-term' == $attribute_name ) {
+			}
+			if ( 'data-term' == $attribute_name ) {
 				$term_slug = sanitize_text_field( $attribute_value );	
 			}
+			if( 'data-parent' == $attribute_name ) {
+    			$post_parent = absint( $attribute_value );
+			}
+			if( 'data-id' == $attribute_name ) {
+    			$term_id = absint( $attribute_value );
+			}
 		}
+
 		
 		if ( !$post_type || !$taxonomy || !$term_slug  ) die( '' );
 		
@@ -101,10 +109,15 @@ final class Reorder_Terms_Helper  {
 		$return[ 'menu_order' ] = $post_menu_order;
 		$return[ 'post_type' ] = $post_type;
 		$return[ 'attributes' ] = $attributes;
+		$post_type_slug = $post_type . '_order';
 		
 		//Update post if passed - Should run only on beginning of first iteration
 		if( $post_id > 0 && !isset( $_POST[ 'more_posts' ] ) ) {
-			update_term_meta( $post_id, $term_slug, $post_menu_order );
+			update_term_meta( $post_id, $post_type_slug, $post_menu_order );
+			$term = get_term( $term_id, $taxonomy );
+			if ( $term->parent != $post_parent ) {
+    			wp_update_term( $term_id, $taxonomy, array( 'parent' => $post_parent ) );        			
+			}
 			$posts_to_exclude[] = $post_id;
 		}
 		
@@ -117,7 +130,7 @@ final class Reorder_Terms_Helper  {
 			$order = $reorder_class->get_post_order();	
 		}
 		
-		$post_type_slug = $post_type . '_order';
+		
 		
 		//Build Query
 		$selected_terms_args = array(
@@ -135,9 +148,9 @@ final class Reorder_Terms_Helper  {
                     'compare' => '>='
                 )
             ),
-            'parent' => $post_parent
+            'hide_empty' => false
         );
-		$terms = get_terms( $taxonomy, $posts );
+		$terms = get_terms( $taxonomy, $selected_terms_args );
 		$start = $menu_order_start;
 		if ( $terms ) {
 			foreach( $terms as $term ) {
@@ -146,10 +159,8 @@ final class Reorder_Terms_Helper  {
 					$start++;	
 				}
 				
-				if ( $post_id != $term->term_id ) {
-					//Update post and counts
-					update_term_meta( $term->term_id, $this->post_type . '_order', $start );	
-				}
+				//Update post and counts
+				update_term_meta( $term->term_id, $this->post_type . '_order', $start );	
 				$posts_to_exclude[] = $term->term_id;
 				$start++;
 			}
@@ -275,8 +286,8 @@ final class Reorder_Terms_Helper  {
 	function reorder_terms_orderby( $sql, $args ) {
     	if ( isset( $args[ 'orderby' ] ) ) {
         	if ( strstr( $args[ 'orderby' ], 'order' ) ) {
-        	    $orderby = 'mt1.meta_value';
-                return $ordserby;
+        	    $orderby = 'CAST( mt1.meta_value as DECIMAL )';
+                return $orderby;
             }
         	
     	}
@@ -345,7 +356,7 @@ final class Reorder_Terms_Helper  {
                 ),
                 'number' => 50,
                 'offset' => 0,
-                'parent' => 0
+                'hide_empty' => false
     		);
     		$terms = get_terms( $selected_tax, $selected_terms_args );
     		    		
@@ -379,7 +390,7 @@ final class Reorder_Terms_Helper  {
 		$taxonomy = $term->taxonomy;
 		?>
 		<li id="list_<?php echo esc_attr( $term->term_id ) ?>" data-taxonomy="<?php echo esc_attr( $taxonomy ); ?>" data-term="<?php echo esc_attr( $term->slug ); ?>" data-id="<?php echo esc_attr( $term->term_id ); ?>" data-menu-order="0" data-parent="<?php echo esc_attr( $term->parent ); ?>" data-post-type="<?php echo esc_attr( $this->post_type ); ?>">
-			<div><?php echo esc_html( $term->name ); ?><?php echo ( defined( 'REORDER_DEBUG' ) && REORDER_DEBUG == true ) ? ' - Menu Order:' . absint( $term_order ) : ''; ?></div>
+			<div><?php echo esc_html( $term->name ); ?><?php echo $term->parent; echo ':'; echo $term->term_id; echo ( defined( 'REORDER_DEBUG' ) && REORDER_DEBUG == true ) ? ' - Menu Order:' . absint( $term_order ) : ''; ?></div>
 			<?php
         		$plugin_slug = $this->post_type . '_order';
         		$selected_terms_args = array(
@@ -395,10 +406,12 @@ final class Reorder_Terms_Helper  {
                             'key' => $plugin_slug,
                             'value' => 0,
                             'compare' => '>='
-                        )
+                        ),
                     ),
+                    'hide_empty' => false,
                     'parent' => $term->term_id
                 );
+                
                 $child_terms = get_terms( $taxonomy = $term->taxonomy, $selected_terms_args );
                 if ( $child_terms ) {
                     echo '<ul class="has-term-children">';
