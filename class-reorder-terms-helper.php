@@ -362,6 +362,9 @@ final class Reorder_Terms_Helper  {
     		$terms = get_terms( $selected_tax, $selected_terms_args );
     		    		
     		if ( $terms ) {
+        		?>
+        		<div><img src="<?php echo esc_url( admin_url( 'images/loading.gif' ) ); ?>" id="loading-animation" /></div>
+        		<?php
         		echo '<ul id="post-list">';
     			foreach( $terms as $term ) {
     				$this->output_row( $term );	
