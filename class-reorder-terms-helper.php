@@ -148,6 +148,7 @@ final class Reorder_Terms_Helper  {
                     'compare' => '>='
                 )
             ),
+            'exclude' => $posts_to_exclude,
             'hide_empty' => false
         );
 		$terms = get_terms( $taxonomy, $selected_terms_args );
