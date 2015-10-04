@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Reorder Terms
-Plugin URI: https://wordpress.org/plugins/reorderterms/
+Plugin URI: https://wordpress.org/plugins/reorder-terms/
 Description: Reorder Terms
 Version: 1.0.0
 Author: Ronald Huereca

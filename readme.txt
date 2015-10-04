@@ -68,6 +68,8 @@ You'll want to make use of <a href="http://codex.wordpress.org/Class_Reference/W
 Ask your questions here!
 
 == Screenshots ==
+1. Front-end terms to reorder
+2. Backend options to reorder
 
 == Changelog ==
 
