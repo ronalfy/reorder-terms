@@ -15,6 +15,8 @@ A simple and easy way to reorder your custom post types within terms in WordPres
 
 We consider Reorder Terms a <strong>developer tool</strong>. If you do not know what `menu_order` or custom queries are, then this plugin is likely not for you.  This is an add-on to <a href="https://wordpress.org/plugins/metronet-reorder-posts/">Reorder Posts</a> and requires <a href="https://wordpress.org/plugins/metronet-reorder-posts/">Reorder Posts 2.1.0 or greater</a>.
 
+[youtube https://www.youtube.com/watch?v=EkjRwzcXc38]
+
 Out of the box, WordPress does not support term meta. With WordPress 4.4, we can reach WordPress nirvana as many things, including this plugin, were not possible before.
 
 This plugin simply allows you to select terms within the context of a post type that you can query and reorder.
