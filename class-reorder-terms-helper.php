@@ -148,6 +148,7 @@ final class Reorder_Terms_Helper  {
                     'compare' => '>='
                 )
             ),
+            'parent' => $post_parent,
             'exclude' => $posts_to_exclude,
             'hide_empty' => false
         );
@@ -286,7 +287,7 @@ final class Reorder_Terms_Helper  {
 	
 	function reorder_terms_orderby( $sql, $args ) {
     	if ( isset( $args[ 'orderby' ] ) ) {
-        	if ( strstr( $args[ 'orderby' ], 'order' ) ) {
+        	if ( strstr( $args[ 'orderby' ], '_order' ) ) {
         	    $orderby = 'CAST( mt1.meta_value as DECIMAL )';
                 return $orderby;
             }
