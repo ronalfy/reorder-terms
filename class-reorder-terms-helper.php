@@ -277,7 +277,7 @@ final class Reorder_Terms_Helper  {
 		//Return Tab
 		$tabs[] = array(
 			'url' => $this->tab_url,
-			'label' => __( 'Reorder Terms', 'reorder-by-term' ),
+			'label' => __( 'Reorder Terms', 'reorder-terms' ),
 			'get' => 'reorder-terms' /*$_GET variable*/,
 			'action' => 'reorder_by_terms_interface_' . $this->post_type
 		);
