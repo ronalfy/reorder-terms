@@ -221,8 +221,8 @@ final class Reorder_Terms_Helper  {
 			wp_enqueue_script( 'reorder_terms', plugins_url( '/js/main.js', __FILE__ ), array( 'reorder_posts' ) );
 			wp_localize_script( 'reorder_terms', 'reorder_terms', array(
 				'action' => 'term_build',
-				'loading_text' => __( 'Loading...  Do not Refresh', 'reorder-by-term' ),
-				'refreshing_text' => __( 'Refreshing...', 'reorder-by-term' ),
+				'loading_text' => __( 'Loading...  Do not Refresh', 'reorder-terms' ),
+				'refreshing_text' => __( 'Refreshing...', 'reorder-terms' ),
 				'sortnonce' =>  wp_create_nonce( 'reorder-term-build' ),
 			) );
 			
@@ -307,7 +307,7 @@ final class Reorder_Terms_Helper  {
         $selected_tax = isset( $_GET[ 'taxonomy' ] ) ? $_GET[ 'taxonomy' ] : false;
 		$taxonomies = get_object_taxonomies( $this->post_type, 'objects' );
 		?>
-		<h3><?php esc_html_e( 'Select a Taxonomy', 'reorder-by-term' ); ?></h3>
+		<h3><?php esc_html_e( 'Select a Taxonomy', 'reorder-terms' ); ?></h3>
 		<form id="reorder-taxonomy" method="get" action="<?php echo esc_url( $this->reorder_page ); ?>">
 		<?php 
 		foreach( $_GET as $key => $value ) {
@@ -325,7 +325,7 @@ final class Reorder_Terms_Helper  {
 		?>
 		<select name="taxonomy">
 			<?php
-			printf( '<option value="none">%s</option>', esc_html__( 'Select a taxonomy', 'reorder-by-term' ) );
+			printf( '<option value="none">%s</option>', esc_html__( 'Select a taxonomy', 'reorder-terms' ) );
 			foreach( $taxonomies as  $tax_name => $taxonomy ) {
 				$label = $taxonomy->label;
 				printf( '<option value="%s" %s>%s</option>', esc_attr( $tax_name ), selected( $tax_name, $selected_tax, false ),  esc_html( $label ) );

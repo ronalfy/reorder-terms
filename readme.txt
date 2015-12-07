@@ -1,7 +1,7 @@
 === Reorder Terms ===
 Contributors: ronalfy, bigwing
-Author URI: https://github.com/ronalfy/reorder-by-term
-Plugin URL: https://wordpress.org/plugins/reorder-by-term/
+Author URI: https://github.com/ronalfy/reorder-terms
+Plugin URL: https://wordpress.org/plugins/reorder-terms/
 Requires at Least: 4.4
 Tested up to: 4.4
 Tags: reorder, re-order, posts, terms, taxonomies, term, taxonomy, post type, post-type, ajax, admin, menu_order, ordering
