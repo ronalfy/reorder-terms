@@ -339,6 +339,8 @@ final class Reorder_Terms_Helper  {
         
         //Output Terms
 		if ( $selected_tax ) {
+    		
+    		//Get Terms
     		$plugin_slug = $this->post_type . '_order';
     		$selected_terms_args = array(
         		'orderby' => $plugin_slug,
@@ -360,14 +362,23 @@ final class Reorder_Terms_Helper  {
                 'hide_empty' => false
     		);
     		$terms = get_terms( $selected_tax, $selected_terms_args );
-    		    		
+    		
+    		//Get child terms
+    		$children = array();
+    		foreach( $terms as $index => $term ) {
+        		if ( $term->parent > 0 ) {
+            		$children[ $term->parent ][] = $term;
+            		unset( $terms[ $index ] );
+        		}
+    		}
+    		    		    		
     		if ( $terms ) {
         		?>
         		<div><img src="<?php echo esc_url( admin_url( 'images/loading.gif' ) ); ?>" id="loading-animation" /></div>
         		<?php
         		echo '<ul id="post-list">';
     			foreach( $terms as $term ) {
-    				$this->output_row( $term );	
+    				$this->output_row( $term, $children );	
     			}
     			echo '</ul><!-- #post-list -->';
     		}
@@ -386,7 +397,7 @@ final class Reorder_Terms_Helper  {
 	 * @param string $term_slug The term Slug
 	 * @uses output_posts method
 	 */
-	private function output_row( $term ) {
+	private function output_row( $term, $children ) {
 		$term_order = get_term_meta( $term->term_id, $this->post_type . '_order', true );
 		if ( !$term_order ) {
     		$term_order = 0;
@@ -396,35 +407,14 @@ final class Reorder_Terms_Helper  {
 		<li id="list_<?php echo esc_attr( $term->term_id ) ?>" data-taxonomy="<?php echo esc_attr( $taxonomy ); ?>" data-term="<?php echo esc_attr( $term->slug ); ?>" data-id="<?php echo esc_attr( $term->term_id ); ?>" data-menu-order="0" data-parent="<?php echo esc_attr( $term->parent ); ?>" data-post-type="<?php echo esc_attr( $this->post_type ); ?>">
 			<div><?php echo esc_html( $term->name ); ?><?php echo ( defined( 'REORDER_DEBUG' ) && REORDER_DEBUG == true ) ? ' - Menu Order:' . absint( $term_order ) : ''; ?></div>
 			<?php
-        		$plugin_slug = $this->post_type . '_order';
-        		$selected_terms_args = array(
-            		'orderby' => $plugin_slug,
-                    'order' => 'ASC',
-                    'meta_query' => array(
-                        'relation' => 'OR',
-                        array(
-                            'key' => $plugin_slug,
-                            'compare' => 'NOT EXISTS'
-                        ),
-                        array(
-                            'key' => $plugin_slug,
-                            'value' => 0,
-                            'compare' => '>='
-                        ),
-                    ),
-                    'hide_empty' => false,
-                    'parent' => $term->term_id
-                );
-                
-                $child_terms = get_terms( $taxonomy = $term->taxonomy, $selected_terms_args );
-                if ( $child_terms ) {
-                    echo '<ul class="has-term-children">';
-                    foreach( $child_terms as $child_term ) {
-                        $this->output_row( $child_term );
-                    }
-                    echo '</ul>';
+    		if ( isset( $children[ $term->term_id ] ) ) {
+        		$child_terms = $children[ $term->term_id ];
+        		echo '<ul class="has-term-children">';
+                foreach( $child_terms as $child_term ) {
+                    $this->output_row( $child_term, $children );
                 }
-                
+                echo '</ul>';
+    		}  
     		?>	
 		</li>
 		<?php
