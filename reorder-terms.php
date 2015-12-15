@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Reorder Terms
-Plugin URI: https://wordpress.org/plugins/reorderterms/
+Plugin URI: https://wordpress.org/plugins/reorder-terms/
 Description: Reorder Terms
 Version: 1.0.0
 Author: Ronald Huereca
@@ -13,7 +13,7 @@ Domain Path: /languages
  * Reorder Post by Term
  * 
  * @package    WordPress
- * @subpackage Reorder by Term plugin
+ * @subpackage Reorder Terms plugin
  */
 final class Reorder_Terms {
 	private static $instance = null;
@@ -69,7 +69,7 @@ final class Reorder_Terms {
 		if ( 'plugins.php' != $pagenow ) return;
 		?>
 		<div class="error">
-			<p><?php printf( __( 'Reorder By Term requires <a href="%s">Reorder Posts</a> 2.1.0 or greater to be installed.', 'reorder-by-term' ), 'https://wordpress.org/plugins/metronet-reorder-posts/' ); ?></p>
+			<p><?php printf( __( 'Reorder Terms requires <a href="%s">Reorder Posts</a> 2.1.0 or greater to be installed.', 'reorder-terms' ), 'https://wordpress.org/plugins/metronet-reorder-posts/' ); ?></p>
 		</div>
 		<?php	
 	}
