@@ -239,9 +239,18 @@ final class Reorder_Terms_Helper  {
 		if ( isset( $_GET[ 'tab' ] ) && 'reorder-terms' == $_GET[ 'tab' ] ) {
 			//Main Reorder Script
 			wp_deregister_script( 'reorder_posts' );
-			wp_enqueue_script( 'reorder_posts', REORDER_URL . '/scripts/sort.js', array( 'reorder_nested' ) ); //CONSTANT REORDER_URL defined in Metronet Reorder Posts	
-
+			wp_enqueue_script( 'reorder_posts', REORDER_URL . '/scripts/sort.js', array( 'reorder_nested' ) ); //CONSTANT REORDER_URL defined in Metronet Reorder Posts
 			wp_localize_script( 'reorder_posts', 'reorder_posts', array(
+				'action' => 'reorder_terms_only_sort',
+				'expand' => esc_js( __( 'Expand', 'metronet-reorder-posts' ) ),
+				'collapse' => esc_js( __( 'Collapse', 'metronet-reorder-posts' ) ),
+				'sortnonce' =>  wp_create_nonce( 'sortnonce' ),
+				'hierarchical' => false,
+			) );	
+			
+			//Main Term Script
+			wp_enqueue_script( 'reorder_terms', plugins_url( '/js/main.js', __FILE__ ), array( 'reorder_posts' ) );
+			wp_localize_script( 'reorder_terms', 'reorder_terms', array(
 				'action' => 'term_build',
 				'loading_text' => __( 'Loading...  Do not Refresh', 'reorder-by-term' ),
 				'refreshing_text' => __( 'Refreshing...', 'reorder-by-term' ),
