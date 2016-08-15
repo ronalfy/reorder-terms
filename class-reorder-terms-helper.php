@@ -239,18 +239,9 @@ final class Reorder_Terms_Helper  {
 		if ( isset( $_GET[ 'tab' ] ) && 'reorder-terms' == $_GET[ 'tab' ] ) {
 			//Main Reorder Script
 			wp_deregister_script( 'reorder_posts' );
-			wp_enqueue_script( 'reorder_posts', plugins_url( 'js/sort.js', __FILE__ ), array( 'reorder_nested' ) ); //CONSTANT REORDER_URL defined in Metronet Reorder Posts
+			wp_enqueue_script( 'reorder_posts', REORDER_URL . '/scripts/sort.js', array( 'reorder_nested' ) ); //CONSTANT REORDER_URL defined in Metronet Reorder Posts	
+
 			wp_localize_script( 'reorder_posts', 'reorder_posts', array(
-				'action' => 'reorder_terms_only_sort',
-				'expand' => esc_js( __( 'Expand', 'metronet-reorder-posts' ) ),
-				'collapse' => esc_js( __( 'Collapse', 'metronet-reorder-posts' ) ),
-				'sortnonce' =>  wp_create_nonce( 'sortnonce' ),
-				'hierarchical' => false,
-			) );	
-			
-			//Main Term Script
-			wp_enqueue_script( 'reorder_terms', plugins_url( '/js/main.js', __FILE__ ), array( 'reorder_posts' ) );
-			wp_localize_script( 'reorder_terms', 'reorder_terms', array(
 				'action' => 'term_build',
 				'loading_text' => __( 'Loading...  Do not Refresh', 'reorder-by-term' ),
 				'refreshing_text' => __( 'Refreshing...', 'reorder-by-term' ),
@@ -391,25 +382,18 @@ final class Reorder_Terms_Helper  {
                 'number' => 50,
                 'offset' => 0,
                 'hide_empty' => false,
+                'hierarchical' => false,
+                'parent' => 0
     		);
     		$terms = get_terms( $selected_tax, $selected_terms_args );
-    		//Get child terms
-    		$children = array();
-    		foreach( $terms as $index => $term ) {
-        		if ( $term->parent > 0 ) {
-            		$children[ $term->parent ][] = $term;
-            		unset( $terms[ $index ] );
-        		}
-    		}
     		    		    		
     		if ( $terms ) {
         		?>
         		<div><img src="<?php echo esc_url( admin_url( 'images/loading.gif' ) ); ?>" id="loading-animation" /></div>
         		<?php
-	        	$term_order = $offset;
         		echo '<ul id="post-list">';
     			foreach( $terms as $term ) {
-    				$term_order = $this->output_row( $term, $children, $term_order );
+    				$this->output_row( $term );
     			}
     			echo '</ul><!-- #post-list -->';
     		}
@@ -428,26 +412,74 @@ final class Reorder_Terms_Helper  {
 	 * @param string $term_slug The term Slug
 	 * @uses output_posts method
 	 */
-	private function output_row( $term, $children, $term_order ) {
+	private function output_row( $term ) {
 		$taxonomy = $term->taxonomy;
+		$plugin_slug = $this->post_type . '_order';
 		$actual_order = get_term_meta( $term->term_id, $this->post_type . '_order', true );
+		
+		// Determine if term children
+		$selected_terms_args = array(
+			'orderby' => $plugin_slug,
+			'order' => 'ASC',
+			'meta_query' => array(
+			'relation' => 'OR',
+				array(
+					'key' => $plugin_slug,
+					'compare' => 'NOT EXISTS'
+				),
+				array(
+					'key' => $plugin_slug,
+					'value' => 0,
+					'compare' => '>='
+				)
+			),
+			'number' => 50,
+			'offset' => 0,
+			'hide_empty' => false,
+			'hierarchical' => false,
+			'parent' => $term->term_id
+			);
+		$terms = get_terms( $taxonomy, $selected_terms_args );
+		
 		?>
 		<li id="list_<?php echo esc_attr( $term->term_id ) ?>" data-taxonomy="<?php echo esc_attr( $taxonomy ); ?>" data-term="<?php echo esc_attr( $term->slug ); ?>" data-id="<?php echo esc_attr( $term->term_id ); ?>" data-menu-order="<?php echo esc_attr( $term_order ); ?>" data-parent="<?php echo esc_attr( $term->parent ); ?>" data-post-type="<?php echo esc_attr( $this->post_type ); ?>">
-			<div><?php echo esc_html( $term->name ); ?><?php echo ( defined( 'REORDER_DEBUG' ) && REORDER_DEBUG == true ) ? ' - Menu Order:' . absint( $term_order ) . ' ' . absint( $actual_order ) . ' ' . $term->term_id: ''; ?></div>
 			<?php
-			$term_order += 1;
-    		if ( isset( $children[ $term->term_id ] ) ) {
-        		$child_terms = $children[ $term->term_id ];
-        		echo '<ul class="has-term-children">';
-                foreach( $child_terms as $child_term ) {
-                    $term_order = $this->output_row( $child_term, $children, $term_order );
-                }
-                echo '</ul>';
-    		}  
-    		?>	
+			$has_children = empty( $terms ) ? false: true;
+			if ( ! $has_children ) {
+				?>
+				<div class="row">
+					<div class="expand row-action">
+					</div><!-- .row-action -->
+					<div class="row-content">
+						<?php echo esc_html( $term->name ); ?><?php echo ( defined( 'REORDER_DEBUG' ) && REORDER_DEBUG == true ) ? ' - Menu Order:' . absint( $actual_order ) . ' ' . absint( $actual_order ) . ' ' . $term->term_id: ''; ?>
+					</div><!-- .row-content -->
+				</div><!-- .row -->
+				<?php
+			} else {
+				?>
+				<div class="row">
+					<div class="expand row-action">
+						<span class="dashicons dashicons-arrow-right"></span>
+					</div><!-- .row-action -->
+					<div class="row-content">
+						<?php echo esc_html( $term->name ); ?><?php echo ( defined( 'REORDER_DEBUG' ) && REORDER_DEBUG == true ) ? ' - Menu Order:' . absint( $actual_order ) . ' ' . absint( $actual_order ) . ' ' . $term->term_id: ''; ?>
+					</div><!-- .row-content -->
+				</div><!-- .row -->
+				<?php
+			}
+			
+			if( $has_children ) {
+				echo '<ul class="children">';
+				foreach( $terms as $term ) {
+					$this->output_row( $term );
+				}
+				echo '</ul>';
+			}
+			
+			
+			?>	
 		</li>
 		<?php
-		return $term_order;
 	} //end output_row
 	
 	
