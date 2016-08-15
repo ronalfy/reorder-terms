@@ -113,7 +113,7 @@ final class Reorder_Terms_Helper  {
 		//Update post if passed - Should run only on beginning of first iteration
 		if( $post_id > 0 && !isset( $_POST[ 'more_posts' ] ) ) {
 			update_term_meta( $post_id, $post_type_slug, $post_menu_order );
-			clean_post_cache( $post_id );
+			wp_update_term( $post_id, $taxonomy, array( 'parent' => $post_parent ) );
 			$posts_to_exclude[] = $post_id;
 		}
 		
@@ -204,7 +204,7 @@ final class Reorder_Terms_Helper  {
 				'expand' => esc_js( __( 'Expand', 'metronet-reorder-posts' ) ),
 				'collapse' => esc_js( __( 'Collapse', 'metronet-reorder-posts' ) ),
 				'sortnonce' =>  wp_create_nonce( 'sortnonce' ),
-				'hierarchical' => false,
+				'hierarchical' => true,
 			) );	
 			
 			//Main Term Script
