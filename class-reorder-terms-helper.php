@@ -24,11 +24,20 @@ final class Reorder_Terms_Helper  {
 	 * @param array $args    If not set, then uses $defaults instead
 	 */
 	public function __construct( $args ) {
+		
+		// Get posts per page
+		$user_id = get_current_user_id();
+		$posts_per_page = get_user_meta( $user_id, 'reorder_items_per_page', true );
+		if ( ! is_numeric( $posts_per_page ) ) {
+			$posts_per_page = 50;
+		}
+		$offset = absint( $posts_per_page - 2 );
+				
 		// Parse arguments
 		$defaults = array(
 			'post_type'   => '',
-			'posts_per_page' => 50,
-			'offset' => 48
+			'posts_per_page' => $posts_per_page,
+			'offset' => $offset
 		);
 		$args = wp_parse_args( $args, $defaults );
 
@@ -52,6 +61,18 @@ final class Reorder_Terms_Helper  {
 		add_action( 'wp_ajax_reorder_terms_only_sort', array( $this, 'ajax_term_sort' ) );
 				
 	}
+	
+	public function filter_term_clauses( $clauses ) {
+		//Output non hierarchical posts
+		$page = isset( $_GET[ 'paged' ] ) ? absint( $_GET[ 'paged' ] ) : 0;
+		$offset = 0;
+		if ( $page > 1 ) {
+			$offset = $this->posts_per_page * ( $page );
+		}
+		$clauses[ 'limits' ] = 'LIMIT ' . $offset . ',' . $this->posts_per_page;
+		return $clauses;
+	}
+	
 	/**
 	 * Saving the post oder for later use
 	 *
@@ -295,9 +316,9 @@ final class Reorder_Terms_Helper  {
 		}
 		//Output non hierarchical posts
 		$page = isset( $_GET[ 'paged' ] ) ? absint( $_GET[ 'paged' ] ) : 0;
-		if ( $page == 0 ) {
-			$offset = 0;	
-		} elseif ( $page > 1 ) {
+		$offset = 0;
+		
+		if ( $page > 1 ) {
 			$offset = $this->offset * ( $page - 1 );
 		}
 		printf( '<input type="hidden" id="reorder-offset" value="%s" />', absint( $offset ) );
@@ -336,13 +357,16 @@ final class Reorder_Terms_Helper  {
                         'compare' => '>='
                     )
                 ),
-                'number' => 300,
-                'offset' => 0,
+                'number' => $this->posts_per_page,
+                'offset' => $offset,
                 'hide_empty' => false,
                 'hierarchical' => false,
-                'parent' => 0
+                'parent' => 0,
+                'child_of' => false
     		);
+    		add_filter( 'terms_clauses', array( $this, 'filter_term_clauses' ) );
     		$terms = get_terms( $selected_tax, $selected_terms_args );
+    		remove_filter( 'terms_clauses', array( $this, 'filter_term_clauses' ) );
     		    		    		
     		if ( $terms ) {
         		?>
@@ -354,6 +378,20 @@ final class Reorder_Terms_Helper  {
     			}
     			echo '</ul><!-- #post-list -->';
     		}
+    		
+    		//Show pagination links
+    		$term_count = wp_count_terms( $selected_tax, array( 'hide_empty' => false, 'parent' => 0  ) );
+			if( $term_count > 1 ) {
+				echo '<div id="reorder-pagination">';
+				$current_url = add_query_arg( array( 'paged' => '%#%' ) );
+				$pagination_args = array(
+					'base' => $current_url,
+					'total' => floor( $term_count / $this->posts_per_page ),
+					'current' => ( $page == 0 ) ? 1 : $page
+				);
+				echo paginate_links( $pagination_args );
+				echo '</div>';
+			}
         }
     
     }
@@ -390,7 +428,7 @@ final class Reorder_Terms_Helper  {
 					'compare' => '>='
 				)
 			),
-			'number' => 50,
+			'number' => 100, /* Hope no more than 100 child terms */
 			'offset' => 0,
 			'hide_empty' => false,
 			'hierarchical' => false,
