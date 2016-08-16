@@ -217,6 +217,11 @@ final class Reorder_Terms_Helper  {
 	public function print_scripts() {
 		//Overwrite action variable by de-registering sort script and adding it back in
 		if ( isset( $_GET[ 'tab' ] ) && 'reorder-terms' == $_GET[ 'tab' ] ) {
+			$selected_tax = isset( $_GET[ 'taxonomy' ] ) ? $_GET[ 'taxonomy' ] : false;
+			$is_hierarchical = 'true';
+			if ( ! is_taxonomy_hierarchical( $selected_tax ) ) {
+				$is_hierarchical = 'false';
+			}
 			//Main Reorder Script
 			wp_deregister_script( 'reorder_posts' );
 			wp_enqueue_script( 'reorder_posts', REORDER_URL . '/scripts/sort.js', array( 'reorder_nested' ) ); //CONSTANT REORDER_URL defined in Metronet Reorder Posts
@@ -225,10 +230,9 @@ final class Reorder_Terms_Helper  {
 				'expand' => esc_js( __( 'Expand', 'metronet-reorder-posts' ) ),
 				'collapse' => esc_js( __( 'Collapse', 'metronet-reorder-posts' ) ),
 				'sortnonce' =>  wp_create_nonce( 'sortnonce' ),
-				'hierarchical' => true,
+				'hierarchical' => $is_hierarchical,
 			) );	
-			
-			//Main Term Script
+						
 			wp_enqueue_script( 'reorder_terms', plugins_url( '/js/main.js', __FILE__ ), array( 'reorder_posts' ) );
 			wp_localize_script( 'reorder_terms', 'reorder_terms', array(
 				'action' => 'term_build',
