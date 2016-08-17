@@ -447,8 +447,10 @@ final class Reorder_Terms_Helper  {
 			if ( ! $has_children ) {
 				?>
 				<div class="row">
+					<?php if ( is_taxonomy_hierarchical( $taxonomy ) ): ?>
 					<div class="expand row-action">
 					</div><!-- .row-action -->
+					<?php endif; ?>
 					<div class="row-content">
 						<?php echo esc_html( $term->name ); ?><?php echo ( defined( 'REORDER_DEBUG' ) && REORDER_DEBUG == true ) ? ' - Menu Order:' . absint( $actual_order ) : ''; ?>
 					</div><!-- .row-content -->
