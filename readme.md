@@ -6,22 +6,16 @@ A simple and easy way to reorder your custom post types within terms in WordPres
 Description
 ----------------------
 
-We consider Reorder Terms a <strong>developer tool</strong>. If you do not know what `menu_order` or custom queries are, then this plugin is likely not for you.  This is an add-on to <a href="https://wordpress.org/plugins/metronet-reorder-posts/">Reorder Posts</a> and requires <a href="https://wordpress.org/plugins/metronet-reorder-posts/">Reorder Posts 2.1.0 or greater</a>.
+Reorder Terms takes a different approach to term reordering. Instead of modifying core tables to achieve reordering, we do it using term meta per post type.
 
-Out of the box, WordPress does not support term meta. With WordPress 4.4, we can reach WordPress nirvana as many things, including this plugin, were not possible before.
+With the ability to add taxonomies to multiple post types, this method allows you to reorder terms within each post type attached to the same taxonomy.
 
-This plugin simply allows you to select terms within the context of a post type that you can query and reorder.
-
-For example, if you have one taxonomy attached to two different post types, would you not want to reorder both?
-
-With this plugin, you can. You just add an extra options to `get_terms`:
-`orderby=>{post_type}_order`
+This plugin treats terms like pages. Each term in a hierarchy has a term order. This allows quick reordering and deep traversing to get the exact terms and order you prefer.
 
 
 Features
 ----------------------
 Add-on to <a href="https://wordpress.org/plugins/metronet-reorder-posts/">Reorder Posts</a>, so there is only one place to do all your reordering.
-Reorder by taxonomy within post type.
 
 Use Cases
 ----------------------
@@ -32,37 +26,31 @@ Your imagination will give you more use-cases.
 Usage
 ----------------------
 
-```
+```php
 /* Sample query and output */
-<?php
-//Build Query
-$post_type_slug = 'post_order';
-$selected_terms_args = array(
-    'orderby' => $post_type_slug,
+$query = array(
+    'orderby' => 'meta_value_num',
     'order' => 'ASC',
     'meta_query' => array(
         'relation' => 'OR',
-            array(
-                'key' => $post_type_slug,
-                'compare' => 'NOT EXISTS'
-            ),
-            array(
-                'key' => $post_type_slug,
-                'value' => 0,
-                'compare' => '>='
-            )
+        array(
+            'key' => 'post_order',
+            'compare' => 'NOT EXISTS'
+        ),
+        array(
+            'key' => 'post_order',
+            'value' => 0,
+            'compare' => '>='
+        )
     ),
-    'hide_empty' => true
+    'hide_empty' => true,
+    'parent' => 0   
 );
-$terms = get_terms( 'category', $selected_terms_args );
-
-?>
-
-<ul>
-<?php
+$terms = get_terms( 'post_format', $query );
+echo '<ul>';
 foreach( $terms as $term ) {
-printf( '<li>%s</li>', $term->name );
+	printf( '<li>%s</li>', esc_html( $term->name ) );
 }
-?>
-</ul><?php
+echo '</ul>';
+
 ```
