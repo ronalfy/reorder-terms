@@ -52,6 +52,9 @@ final class Reorder_Terms {
 		//Main init class
 		add_action( 'metronet_reorder_post_types_loaded', array( $this, 'plugin_init' ) );
 		
+		// Initialize admin items
+		add_action( 'admin_init', array( $this, 'reorder_posts_admin_init' ), 12, 1 );
+		
 		
 	}
 	
@@ -72,6 +75,41 @@ final class Reorder_Terms {
 			<p><?php printf( __( 'Reorder Terms requires <a href="%s">Reorder Posts</a> 2.1.0 or greater to be installed.', 'reorder-terms' ), 'https://wordpress.org/plugins/metronet-reorder-posts/' ); ?></p>
 		</div>
 		<?php	
+	}
+	
+	/**
+	 * Initializes into Reorder Posts settings section to show a term query or not
+	 *
+	 * @author Ronald Huereca <ronalfy@gmail.com>
+	 * @since 1.1.0
+	 * @access public
+	 * @uses admin_init WordPress action
+	 */
+	public function reorder_posts_admin_init() {
+		add_settings_section( 'mn-reorder-terms', _x( 'Reorder Terms', 'plugin settings heading' , 'reorder-terms' ), '__return_empty_string', 'metronet-reorder-posts' );
+		
+		add_settings_field( 'mn-reorder-terms-advanced', __( 'Show Terms Query', 'reorder-terms' ), array( $this, 'add_settings_field_term_query' ), 'metronet-reorder-posts', 'mn-reorder-terms', array( 'desc' => __( 'By default the terms query displays.', 'reorder-terms' ) ) );
+	}
+	
+	/**
+	 * Outputs settings section for showing a term query or not
+	 *
+	 * @author Ronald Huereca <ronalfy@gmail.com>
+	 * @since 1.1.0
+	 * @access public
+	 * @uses MN_Reorder_Admin WordPress object
+	 */
+	public function add_settings_field_term_query() {
+		$options = MN_Reorder_Admin::get_instance()->get_plugin_options();
+		
+		$selected = 'on';
+		if ( isset( $options[ 'reorder_terms_show_query' ] ) ) {
+			$selected = $options[ 'reorder_terms_show_query' ];
+		}
+				
+		printf( '<p><input type="radio" name="metronet-reorder-posts[reorder_terms_show_query]" value="on" id="reorder_terms_show_query_yes" %s />&nbsp;<label for="reorder_terms_show_query_yes">%s</label></p>', checked( 'on', $selected, false ), esc_html__( 'Yes', 'reorder-terms' ) );
+		printf( '<p><input type="radio" name="metronet-reorder-posts[reorder_terms_show_query]" value="off" id="reorder_terms_show_query_no" %s />&nbsp;<label for="reorder_terms_show_query_no">%s</label></p>', checked( 'off', $selected, false ), esc_html__( 'No', 'reorder-terms' ) );
+		
 	}
 	
 	/**
