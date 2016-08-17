@@ -62,6 +62,13 @@ final class Reorder_Terms_Helper  {
 				
 	}
 	
+	/**
+	 * Allow for pagination in the reorder terms admin area
+	 *
+	 * @author Ronald Huereca
+	 * @since Reorder 1.1
+	 * @access public
+	 */
 	public function filter_term_clauses( $clauses ) {
 		//Output non hierarchical posts
 		$page = isset( $_GET[ 'paged' ] ) ? absint( $_GET[ 'paged' ] ) : 0;
