@@ -15,7 +15,7 @@ A simple and easy way to reorder your terms in WordPress.
 
 We consider Reorder Terms a <strong>developer tool</strong>. If you do not know what `menu_order` or custom queries are, then this plugin is likely not for you.  This is an add-on to <a href="https://wordpress.org/plugins/metronet-reorder-posts/">Reorder Posts</a> and requires <a href="https://wordpress.org/plugins/metronet-reorder-posts/">Reorder Posts 2.1.0 or greater</a>.
 
-[youtube https://www.youtube.com/watch?v=EkjRwzcXc38]
+[youtube https://www.youtube.com/watch?v=C_dmk9ApGGc]
 
 Reorder Terms takes a different approach to term reordering. Instead of modifying core tables to achieve reordering, we do it using term meta per post type.
 
