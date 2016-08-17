@@ -3,7 +3,7 @@
 Plugin Name: Reorder Terms
 Plugin URI: https://wordpress.org/plugins/reorder-terms/
 Description: Reorder Terms
-Version: 1.0.0
+Version: 1.1.0
 Author: Ronald Huereca
 Author URI: https://github.com/ronalfy/reorder-terms
 Text Domain: reorder-terms

@@ -2,14 +2,14 @@
 Contributors: ronalfy, bigwing
 Author URI: https://github.com/ronalfy/reorder-terms
 Plugin URL: https://wordpress.org/plugins/reorder-terms/
-Requires at Least: 4.4
-Tested up to: 4.4
-Tags: reorder, re-order, posts, terms, taxonomies, term, taxonomy, post type, post-type, ajax, admin, menu_order, ordering
-Stable tag: 1.0.0
+Requires at Least: 4.6
+Tested up to: 4.6
+Tags: reorder, reorder terms
+Stable tag: 1.1.0
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-A simple and easy way to reorder your custom post types within terms in WordPress.
+A simple and easy way to reorder your terms in WordPress.
 
 == Description ==
 
@@ -17,37 +17,56 @@ We consider Reorder Terms a <strong>developer tool</strong>. If you do not know 
 
 [youtube https://www.youtube.com/watch?v=EkjRwzcXc38]
 
-Out of the box, WordPress does not support term meta. With WordPress 4.4, we can reach WordPress nirvana as many things, including this plugin, were not possible before.
+Reorder Terms takes a different approach to term reordering. Instead of modifying core tables to achieve reordering, we do it using term meta per post type.
 
-This plugin simply allows you to select terms within the context of a post type that you can query and reorder.
+With the ability to add taxonomies to multiple post types, this method allows you to reorder terms within each post type attached to the same taxonomy.
 
-For example, if you have one taxonomy attached to two different post types, would you not want to reorder both?
+This plugin treats terms like pages. Each term in a hierarchy has a term order. This allows quick reordering and deep traversing to get the exact terms and order you prefer.
 
-With this plugin, you can. You just add an extra options to `get_terms`:
-`orderby=>{post_type}_order`
+As a result, you can get reordered terms with a query such as:
+
+`
+$query = array(
+    'orderby' => 'meta_value_num',
+    'order' => 'ASC',
+    'meta_query' => array(
+        'relation' => 'OR',
+        array(
+            'key' => 'post_order',
+            'compare' => 'NOT EXISTS'
+        ),
+        array(
+            'key' => 'post_order',
+            'value' => 0,
+            'compare' => '>='
+        )
+    ),
+    'hide_empty' => true,
+    'parent' => 0   
+);
+$terms = get_terms( 'post_format', $query );
+echo '<ul>';
+foreach( $terms as $term ) {
+	printf( '<li>%s</li>', esc_html( $term->name ) );
+}
+echo '</ul>';
+`
+
+While admittedly the query isn't exactly poetry, it's efficient, and insanely flexible.
 
 <h3>Features</h3>
-<li>Add-on to <a href="https://wordpress.org/plugins/metronet-reorder-posts/">Reorder Posts</a>, so there is only one place to do all your reordering.
-Reorder by taxonomy within post type.
+<li>Add-on to <a href="https://wordpress.org/plugins/metronet-reorder-posts/">Reorder Posts</a>, so there is only one place to do all your reordering.</li>
+<li>Reorder terms for each taxonomy within each post type. Very flexible.</li>
 </ul>
 
 <h3>Spread the Word</h3>
 If you like this plugin, please help spread the word.  Rate the plugin.  Write about the plugin.  Something :)
 
-<h3>Translations</h3>
- None so far.
+<h3>Development</h3>
  
- If you would like to contribute a translation, please leave a support request with a link to your translation.
- 
- <h3>Development</h3>
- 
- Development happens on GitHub.
+Development happens on GitHub.
 
 You are welcome to help us out and <a href="https://github.com/ronalfy/reorder-terms">contribute on GitHub</a>.
-
-<h3>Support</h3>
-
-If you require immediate feedback, feel free to @reply me on Twitter with your support link:  <a href="https://twitter.com/ronalfy">@ronalfy</a>.  Support is always free unless you require some advanced customization out of the scope of the plugin's existing features.   Please rate/review the plugin if we have helped you to show thanks for the support.
 
 
 == Installation ==
@@ -61,7 +80,6 @@ This plugin requires <a href="https://wordpress.org/plugins/metronet-reorder-pos
 
 Please note that this plugin <strong>does not</strong> change the order of items in the front-end.  This functionality is <strong>not</strong> core WordPress functionality, so it'll require some work on your end to get the posts to display in your theme correctly.
 
-You'll want to make use of <a href="http://codex.wordpress.org/Class_Reference/WP_Query">WP_Query</a>, <a href="http://codex.wordpress.org/Template_Tags/get_posts">get_posts</a>, or <a href="http://codex.wordpress.org/Plugin_API/Action_Reference/pre_get_posts">pre_get_posts</a> to modify query behavior on the front-end of your site.
 
 <a href="https://github.com/ronalfy/reorder-terms#usage">See usage for some examples.</a>
 
@@ -70,15 +88,22 @@ You'll want to make use of <a href="http://codex.wordpress.org/Class_Reference/W
 Ask your questions here!
 
 == Screenshots ==
-1. Front-end terms to reorder
-2. Backend options to reorder
+1. Reorder Terms Interface
+2. Example of Terms on the front-end
+3. Example of Terms on the front-end
 
 == Changelog ==
+
+= 1.1.0 =
+* Re-release
 
 = 1.0.0 =
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.1.0 =
+Backwards incompatible re-release.
 
 = 1.0.0 =
 Initial Release
