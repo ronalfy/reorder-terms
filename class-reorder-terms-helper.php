@@ -396,6 +396,33 @@ final class Reorder_Terms_Helper  {
 				echo paginate_links( $pagination_args );
 				echo '</div>';
 			}
+			$options = MN_Reorder_Admin::get_instance()->get_plugin_options();
+				if ( ! isset( $options[ 'rt_show_query' ] ) || 'on' === $options[ 'rt_show_query' ] ):
+				printf( '<h3>%s</h3>', esc_html__( 'Reorder Terms Query', 'reorder-terms' ) );
+				printf( '<p>%s</p>', esc_html__( 'You will need custom code to reorder terms.  Here are some example query arguments for get_terms.', 'reorder-terms' ) );
+$query = "
+\$query = array(
+    'orderby' => 'meta_value_num',
+    'order' => 'ASC',
+    'meta_query' => array(
+        'relation' => 'OR',
+        array(
+            'key' => '{$plugin_slug}',
+            'compare' => 'NOT EXISTS'
+        ),
+        array(
+            'key' => '{$plugin_slug}',
+            'value' => 0,
+            'compare' => '>='
+        )
+    ),
+    'hide_empty' => true,
+    'parent' => 0   
+);
+\$terms = get_terms( '{$selected_tax}', \$query );
+";
+				printf( '<blockquote><pre><code>%s</code></pre></blockquote>', esc_html( print_r( $query, true ) ) );
+				endif;
         }
     
     }
