@@ -3,9 +3,9 @@ Contributors: ronalfy, bigwing
 Author URI: https://github.com/ronalfy/reorder-terms
 Plugin URL: https://wordpress.org/plugins/reorder-terms/
 Requires at Least: 4.6
-Tested up to: 4.9
+Tested up to: 5.2
 Tags: reorder, reorder terms
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv3 or later
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -42,7 +42,7 @@ $query = array(
         )
     ),
     'hide_empty' => true,
-    'parent' => 0   
+    'parent' => 0
 );
 $terms = get_terms( 'post_format', $query );
 echo '<ul>';
@@ -63,7 +63,7 @@ While admittedly the query isn't exactly poetry, it's efficient, and insanely fl
 If you like this plugin, please help spread the word.  Rate the plugin.  Write about the plugin.  Something :)
 
 <h3>Development</h3>
- 
+
 Development happens on GitHub.
 
 You are welcome to help us out and <a href="https://github.com/ronalfy/reorder-terms">contribute on GitHub</a>.
@@ -71,7 +71,7 @@ You are welcome to help us out and <a href="https://github.com/ronalfy/reorder-t
 
 == Installation ==
 
-Either install the plugin via the WordPress admin panel, or ... 
+Either install the plugin via the WordPress admin panel, or ...
 
 1. Upload `reorder-terms` to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
@@ -94,6 +94,10 @@ Ask your questions here!
 
 == Changelog ==
 
+= 1.1.1 =
+* Released 2019-02-16
+* Added term helper query in the back-end
+
 = 1.1.0 =
 * Re-release
 
@@ -101,6 +105,9 @@ Ask your questions here!
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.1.1 =
+Added term helper query in the back-end
 
 = 1.1.0 =
 Backwards incompatible re-release.
