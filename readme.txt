@@ -3,7 +3,7 @@ Contributors: ronalfy, bigwing
 Author URI: https://github.com/ronalfy/reorder-terms
 Plugin URL: https://wordpress.org/plugins/reorder-terms/
 Requires at Least: 4.6
-Tested up to: 5.2
+Tested up to: 5.3
 Tags: reorder, reorder terms
 Stable tag: 1.1.1
 License: GPLv3 or later
