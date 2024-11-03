@@ -1,9 +1,9 @@
 === Reorder Terms ===
-Contributors: ronalfy, bigwing
+Contributors: ronalfy
 Author URI: https://github.com/ronalfy/reorder-terms
 Plugin URL: https://wordpress.org/plugins/reorder-terms/
 Requires at Least: 4.6
-Tested up to: 6.0
+Tested up to: 6.7
 Tags: reorder, reorder terms
 Stable tag: 1.1.1
 License: GPLv3 or later
